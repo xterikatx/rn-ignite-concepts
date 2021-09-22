@@ -6,17 +6,32 @@ import {
   TextInput,
   Platform,
   ScrollView,
+  FlatList,
 } from 'react-native';
 import {Button} from '../components/Button';
 import {SkillCard} from '../components/SkillCard';
+import {getId} from '../helpers/getId';
+
+interface SkillData {
+  id: string;
+  name: string;
+}
 
 export default function Home() {
   const [newSkill, setNewSkill] = useState('');
-  const [mySkills, setMySkills] = useState([]);
+  const [mySkills, setMySkills] = useState<SkillData[]>([]);
   const [gretting, setGreeting] = useState('');
 
   function handleAddNewSkill() {
-    setMySkills(oldState => [...oldState, newSkill]);
+    const data = {
+      id: String(getId(0, 9)),
+      name: newSkill,
+    };
+    setMySkills(oldState => [...oldState, data]);
+  }
+
+  function handleRemoveSkill(id: string) {
+    setMySkills(oldState => oldState.filter(skill => skill.id !== id));
   }
 
   useEffect(() => {
@@ -42,13 +57,19 @@ export default function Home() {
         onChangeText={setNewSkill}
       />
 
-      <Button title="Add" handlePress={handleAddNewSkill} />
+      <Button title="Add" onPress={handleAddNewSkill} disabled={!newSkill} />
       <Text style={[styles.title, {marginVertical: 50}]}>My Skills</Text>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {mySkills.map(skill => (
-          <SkillCard skill={skill} key={skill} />
-        ))}
-      </ScrollView>
+      <FlatList
+        data={mySkills}
+        showsVerticalScrollIndicator={false}
+        renderItem={({item}) => (
+          <SkillCard
+            skill={item.name}
+            key={item.id}
+            onPress={(): void => handleRemoveSkill(item.id)}
+          />
+        )}
+      />
     </SafeAreaView>
   );
 }
