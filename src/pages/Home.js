@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Text,
   SafeAreaView,
   StyleSheet,
   TextInput,
   Platform,
-  TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import {Button} from '../components/Button';
 import {SkillCard} from '../components/SkillCard';
@@ -13,14 +13,28 @@ import {SkillCard} from '../components/SkillCard';
 export default function Home() {
   const [newSkill, setNewSkill] = useState('');
   const [mySkills, setMySkills] = useState([]);
+  const [gretting, setGreeting] = useState('');
 
   function handleAddNewSkill() {
     setMySkills(oldState => [...oldState, newSkill]);
   }
 
+  useEffect(() => {
+    const currentHour = new Date().getHours();
+    if (currentHour < 12) {
+      setGreeting('Good morning');
+    } else if (currentHour > 12 && currentHour < 18) {
+      setGreeting('Good afternoon');
+    } else {
+      setGreeting('Good evening');
+    }
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Hi, Erika</Text>
+      <Text style={styles.greetings}>{gretting}</Text>
+
       <TextInput
         style={styles.input}
         placeholder="New Skill"
@@ -30,10 +44,11 @@ export default function Home() {
 
       <Button title="Add" handlePress={handleAddNewSkill} />
       <Text style={[styles.title, {marginVertical: 50}]}>My Skills</Text>
-
-      {mySkills.map(skill => (
-        <SkillCard skill={skill} key={skill} />
-      ))}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {mySkills.map(skill => (
+          <SkillCard skill={skill} key={skill} />
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -69,5 +84,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 17,
     fontWeight: 'bold',
+  },
+  greetings: {
+    color: '#fff',
   },
 });
