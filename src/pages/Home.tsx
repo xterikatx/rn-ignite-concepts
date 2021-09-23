@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TextInput,
   Platform,
-  ScrollView,
   FlatList,
 } from 'react-native';
 import {Button} from '../components/Button';
